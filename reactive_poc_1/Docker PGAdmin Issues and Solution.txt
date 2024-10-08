@@ -1,0 +1,69 @@
+2023-03-22 12:19:34 2023-03-22 06:49:34.893  INFO 7 --- [or-http-epoll-3] c.a.n.c.controller.CustomerController    : Request received to get customer details for customerTpe : Corporate
+2023-03-22 12:19:44 2023-03-22 06:49:44.944 ERROR 7 --- [tor-tcp-epoll-3] c.a.n.c.controller.CustomerController    : Error occurred for customerType Corporate : Failed to obtain R2DBC Connection; nested exception is io.r2dbc.postgresql.PostgresqlConnectionFactory$PostgresConnectionException: Cannot connect to postgres:5432
+2023-03-22 12:19:44 2023-03-22 06:49:44.948 ERROR 7 --- [tor-tcp-epoll-3] c.a.n.c.e.CustomExceptionHandler         : Failed to obtain R2DBC Connection; nested exception is io.r2dbc.postgresql.PostgresqlConnectionFactory$PostgresConnectionException: Cannot connect to postgres:5432 status code 500 INTERNAL_SERVER_ERROR
+
+#### Postgress #####
+Error: Database is uninitialized and superuser password is not specified.
+2023-03-22 12:23:59        You must specify POSTGRES_PASSWORD to a non-empty value for the
+2023-03-22 12:23:59        superuser. For example, "-e POSTGRES_PASSWORD=password" on "docker run".
+2023-03-22 12:23:59 
+2023-03-22 12:23:59        You may also use "POSTGRES_HOST_AUTH_METHOD=trust" to allow all
+2023-03-22 12:23:59        connections without a password. This is *not* recommended.
+2023-03-22 12:23:59 
+2023-03-22 12:23:59        See PostgreSQL documentation about "trust":
+2023-03-22 12:23:59        https://www.postgresql.org/docs/current/auth-trust.html
+
+####PGAdmin ####
+2023-03-22 12:26:05 You need to define the PGADMIN_DEFAULT_EMAIL and PGADMIN_DEFAULT_PASSWORD or PGADMIN_DEFAULT_PASSWORD_FILE environment variables
+
+
+
+POSTGRES_HOST_AUTH_METHOD
+
+You must specify POSTGRES_PASSWORD to a non-empty value for the superuser
+2023-03-22 12:33:16      
+http://localhost:5050/  
+
+##########  unable to connect with reactivedemo dabase #######
+https://towardsdatascience.com/how-to-run-postgresql-and-pgadmin-using-docker-3a6a8ae918b5
+
+docker exec -it mysql_container_name mysql -uroot -p
+
+docker volume ls
+docker exec -it customer-service-postgres-1 psql -U postgres
+docker inspect 1 | grep IPAddress
+
+1] i.r.p.client.ReactorNettyClient          : Error: SEVERITY_LOCALIZED=FATAL, SEVERITY_NON_LOCALIZED=FATAL, CODE=3D000, MESSAGE=database "reactivedemo" does not exist, FILE=postinit.c, LINE=941, ROUTINE=InitPostgres
+
+https://dykraf.com/blog/how-to-connect-pgadmin4-and-postgresql-server-on-docker-container
+https://towardsdatascience.com/how-to-run-postgresql-and-pgadmin-using-docker-3a6a8ae918b5
+https://www.youtube.com/watch?v=RUeTKUf6JV0
+https://www.pgadmin.org/docs/pgadmin4/6.21/container_deployment.html
+Database Steps
+1. Follow below steps 
+	docker pull dpage/pgadmin4  : run this command
+	docker images
+	docker ps
+	
+	docker run -p 5050:5050 \
+    -e 'PGADMIN_DEFAULT_EMAIL=server@myapp.de' \
+    -e 'PGADMIN_DEFAULT_PASSWORD=XXXX' \
+    -d dpage/pgadmin4
+	
+	docker container create \
+	 --name pgadmin4_container \
+	 --p 5432:5432
+	 --e POSTGRES_PASSWORD=admin \
+	 
+	 docker exec -it pg_container psql -U postgres
+	 docker exec -it 8d24635c322a psql -U postgres
+
+Setup Postgres Database - Setup Postgres using Docker: https://www.youtube.com/watch?v=3fV-YsQiRAQ
+Connect with postgres usign docker CLI command:  https://www.youtube.com/watch?v=VIEkFUmBp6I
+
+\l : show all the databse
+
+Shell commands for postgres: 
+https://chartio.com/resources/tutorials/how-to-list-databases-and-tables-in-postgresql-using-psql/
+https://gist.github.com/jessepinkman9900/3f65e33ffd84abc84bd331d464d55c11
+	 

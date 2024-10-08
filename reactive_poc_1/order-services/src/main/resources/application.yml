@@ -1,0 +1,15 @@
+server:
+  port: 8090
+  compression:
+    enabled: true
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://postgres:admin@localhost:5432/order
+
+
+logging:
+  level:
+    com.adidas.next.shippingapi: TRACE
+    org:
+      postgres: ERROR
+  env: local

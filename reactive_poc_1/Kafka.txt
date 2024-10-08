@@ -1,0 +1,25 @@
+Topics, Partion & Replicas
+https://hevodata.com/learn/kafka-replication/#:~:text=Kafka%20Replication%20is%20allowed%20at,%E2%80%9Cin%2Dsync%E2%80%9D%20partitions.
+https://stackoverflow.com/questions/27150925/what-is-difference-between-partition-and-replica-of-a-topic-in-kafka-cluster
+
+We can create multiple partition for specific Topic as per need and it works with main replica(leader) and  its copies are used only for redundancy. 
+
+Each partition has one server which acts as the "leader" and zero or more servers which act as "followers". The leader handles all read and write requests for the partition while the followers passively replicate the leader. If the leader fails, one of the followers will automatically become the new leader. Each server acts as a leader for some of its partitions and a follower for others so load is well balanced within the cluster. 
+
+partition: each topic can be splitted up into partitions for load balancing (you could write into different partitions at the same time) & scalability (the topic can scale up without the instance limitations); within the same partition the records are ordered;
+
+replica: for fault-tolerant durability mainly;
+
+In simple terms, partition is used for scalability and replication is for availability.
+
+****
+Zookeper: manages all the kafka topics partions, and all the partion send Alive message to zookeeper. default Alive cong. time is 6000 ms.
+
+
+Default partition configuration in kafka topic ****
+
+If you do not specify number of partitions to a topic, then kafka create a topic with one partition by default. You can confirm the same by checking the property 'num.partitions' in config/server.properties file.
+num.partitions=1
+https://self-learning-java-tutorial.blogspot.com/2019/11/kafka-what-is-default-number-of.html
+https://stackoverflow.com/questions/48986780/kafka-create-topic-with-default-number-of-partitions
+

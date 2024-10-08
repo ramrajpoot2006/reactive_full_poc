@@ -1,0 +1,31 @@
+server:
+  compression:
+    enabled: true
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://postgres:admin@localhost:5432/reactivedemo
+
+logging:
+  level:
+    com.adidas.next.shippingapi: TRACE
+    org:
+      postgres: ERROR
+  env: local
+
+kafka:
+  bootstrap-servers: 127.0.0.1:9092
+  publish-message: true
+  producer:
+    topic: order_topic
+    client-id-config: CLIENT_ID_CONFIG
+  ssl:
+    enabled: false
+    security-protocol: SSL
+    keystore-type: JKS
+    truststore-type: JKS
+    key-password: KAFKA_SSL_KEYSTORE_PASSWORD
+    trust-store-password: KAFKA_SSL_TRUSTORE_PASSWORD
+    trust-store-location-path: KAFKA_SSL_TRUSTORE_LOCATION
+    key-store-password: KAFKA_SSL_KEYSTORE_PASSWORD
+    key-store-location-path: KAFKA_SSL_KEYSTORE_LOCATION
+    protocol: TLSv1.2

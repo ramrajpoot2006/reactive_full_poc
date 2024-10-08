@@ -1,0 +1,21 @@
+server:
+  compression:
+    enabled: true
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://postgres:admin@localhost:5432/basket
+
+
+logging:
+  level:
+    com.adidas.next.shippingapi: TRACE
+    org:
+      postgres: ERROR
+  env: local
+orderservice:
+  host: http://localhost:8090
+  uri:  /order-service/createOrder
+webclient:
+  timeout:
+    connect-millis: 1000
+    read-millis: 3000    

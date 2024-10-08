@@ -1,0 +1,495 @@
+
+1) Basic pillar of coding
+2) Paradigm in coding
+3) Microservice archtecture
+4) Reactor Framework
+	reactive Systems
+	Reactive programming
+	reactive microservice
+	Mono and flux
+	
+
+
+2 Basic Pillars
+	1) high cohesion
+	2) loosely coupling
+
+SOLId principles..
+	https://en.wikipedia.org/wiki/SOLID
+
+DesignPattern
+Creational
+	Factory
+	singleton
+	Abstract factory
+	Builder
+	
+Structrual
+	Adaptor
+	Decorator
+
+Behvauroual
+	Observer
+
+J2EE	
+	MVC
+	ORM
+	Business Delegator
+
+J2ee deign patter have lot of boiler palt code that why framework..
+
+Arrays were having static size..
+we have sort manually 
+we have to search 
+	lineary
+	Binary 
+Arrays of size 10,
+ if we awant to insert 11th element.
+	1 Array of size +1
+	2 copy all the elemeent to new array
+	3 insert the new element
+	4 garabage collect the array
+	
+Framework is lie of code or APi that is used to automate the redudant tasks / boiler frarmwrok
+1 party framework
+2 third party
+	Spring, Struts, hiberante...
+	
+Java is cotainer component model
+
+Need
+every time i have to create object and give to container...
+this make my program tiht couoled to the object creation logic
+high cohesion and loose coupling lost...
+
+IOC ---> spring
+
+------------------------------------	
+Pradigm of coding:
+------------------------------------
+OOP: noun based programming, where you highlight noun and create the class.
+		if noun is proper noun, like employeename, its not sub divisible it becomes instances
+FunctionalProgamming.
+	Action/verb/declartive..
+	
+	
+
+
+Type of Applicaitons:
+	Web Applicaitons
+		1) monolithic
+		2) Microservices
+	Desktop applicaitons
+	modbile based application
+
+
+
+ 
+
+Before Microservices
+========================
+
+ 
+
+Before Microservoce we used to Monolthic Architecture..
+
+
+Retail domain application
+
+
+               {
+                              Customer CRUD  Controller/Service/DAO JSP
+                              Product CRUD  Controller/Service/DAO JSP
+                              ORder CRUD  Controller/Service/DAO JSP
+                              Banking CRUD  Controller/Service/DAO JSP
+               } jar/war/tar/ear-----?
+
+                    JBOSS
+					WebSpehere
+					IIS
+					Glass Fish
+                                                                                                                                                                                                             
+this Type of Good for Stable/stagnant Applications..
+
+ 
+
+ 
+
+We are gooing to enhance the functional of Customr..
+
+              
+This Arcitecture LAcks:
+1) Cohesivity
+2) Business Domains
+3) No size Limit
+4) Loosely Coupled/ Not Autonomus
+5) Independetaly Scalable
+6) Resilience/Not Fault Tolerant
+7) Observable (locate the errors easily. or see the logs proerly)
+
+8) It lacks Tools.
+                              tools to handle failrue
+                              tools to fasten the deployment...
+
+              
+
+microservices
+-------------
+
+                             
+
+Microservices
+==============
+
+                             
+
+To evolve on Monolithic architecture, Twelve-Factor app was published by Heroku co-founder 
+Adam Wiggins in 2011
+
+According to these principles, In the modern era,
+
+software is commonly delivered as a service: called web apps, or software-as-a-service.
+
+For Further Reading, Refer following Links:
+
+https://12factor.net/
+
+https://en.wikipedia.org/wiki/Twelve-Factor_App_methodology
+
+ 
+
+ 
+
+ 
+
+In March 2012, James Lewis presented a case study Micro services - Java,
+
+the Unix Way at 33rd Degree in Krakow. 
+
+But it was for only for DEsktop Applciaiton
+
+ 
+
+Web domain Piolteing was done by Adrain Cockcroft...
+
+Adrian Cockcroft at Netflix, describing this approach
+
+as "fine grained SOA" was pioneering the style at web scale.
+
+ 
+
+ 
+
+Following were the finalized characteristics of Microservice Architecture:
+
+               Componentization via Services
+               Organized around Business Capabilities
+               Products not Projects
+               Smart endpoints and dumb pipes
+               Decentralized Governance
+               Decentralized Data Management/Polyglot Persistence
+               Infrastructure Automation
+               Design for failure
+               Evolutionary Design
+ 
+
+Documentation of thhess things were done by the James Lewis and Martin Fowler/Uncle Bob       
+
+              
+
+monotlic app
+
+               {
+                              Customer CRUD  Controller/Service/DAO JSP
+                              Product CRUD  Controller/Service/DAO JSP
+                              ORder CRUD  Controller/Service/DAO JSP
+                              Bancking CRUD  Controller/Service/DAO JSP
+               } jar/war/tar/ear-----?
+
+ 
+
+with MSA.
+
+             {Customer CRUD  Controller/Service/DAO  server DB deployment(emebeded Server)}
+			 
+             {Product CRUD  Controller/Service/DAO server DB deployment(emebeded Server)}
+			 
+             {ORder CRUD  Controller/Service/DAO server DB deployment(emebeded Server)}
+             {Bancking CRUD  Controller/Service/DAO server DB deployment(emebeded Server)}
+
+              
+
+               Conusmer producer insteraction/ they will offer service to each other
+
+they are not complete aplciation
+
+they have interact and make a complete applicaiton
+
+micro component            since they office service each pther microservice componet
+
+ 
+
+These apps are executed in isolated manner from each other..
+
+Thats why vitualization came thats we we ahve conaineization/ Cloud providers like AWS
+
+                             
+
+List<Product>                   
+
+                             
+
+MSC--> Microservice Components
+
+                              
+
+Object are logical entity/intangible/cannot take print out.
+
+these object can stay only the Language enviroment on RAM.
+
+ 
+
+Producer-> Logical to Physical-------------------------------------------------------------Transfer--> Consumer
+
+                                                            Representt the State of Object                                                                                                                                                                                                                                    from Physical to logical
+
+                                                                           in XML/TEXT/JSON/MIME (Multipurpose Internet Mail Extension)
+REST
+
+ 
+
+ 
+
+Microservice Architecture uses the REST Architecture..
+
+REST Further expploits HTTP(LATER)
+
+ 
+
+Microservice
+
+PolyGlot
+
+PolyglotPersistence
+
+ 
+
+ 
+
+These object are supposed to be converted from Logical entity to Physical entity..
+
+               Serialization...
+
+               Marshale to XML
+
+               Encode in JSON
+
+After the conversion objects indepdent/agnostic
+
+ 
+
+objects have->State--State-- represented in form of XML/JSON/TExt----> transfered accross network.
+
+ 
+
+Rpresentational State Transfer...
+
+ 
+
+ 
+
+Microservice Architecture exploits Rest Architecture, Rest Architecture further Exploit HTTP....
+
+ 
+
+Due to this reason every MSC, can be in any langauge.
+
+hence Microservice are called to be polyglot languages..
+
+ 
+
+PolyglotPersistence
+
+ 
+
+ 
+
+In Java to implement Microservice Applications/REST  there many frameworks:
+
+               1) JAX-RS
+
+                              Rest Easy
+
+                              Jersey
+
+ 
+
+               2) Dropwizard
+
+                              JAX-RS + hiberant+maven+automation
+
+              
+
+               3) Micronaut/Quarks/PlayFramework
+
+              
+
+               5) Spring boot
+
+                                             Spring Rest
+
+                                             Whats the need of spring Boot  
+
+                                                            microservices
+
+                                                            Spring Boot is a framework of framework (Spring Boot is Framework over Spring MVC)
+
+              
+
+              
+
+For Further Reading, Refer the links given below:
+
+Source: https://martinfowler.com/microservices/
+
+Details: https://martinfowler.com/articles/microservices.html
+
+Details: https://en.wikipedia.org/wiki/Microservices
+
+Principles: https://en.wikipedia.org/wiki/Twelve-Factor_App_methodology
+
+Bounded Context: https://martinfowler.com/bliki/BoundedContext.html
+
+PolyGlot Persistence: https://martinfowler.com/bliki/PolyglotPersistence.html
+
+When to use microservices: https://martinfowler.com/articles/microservice-trade-offs.html
+
+ 
+
+ 
+
+Drawbracks of Microservice:
+==========================
+1) expensive as deployment will be done on cloud platforms.
+               Each deployment should be different EC2 instance or cloud infra
+
+2) we full stack developer expensive work resources/Labour:
+               spring boot
+               docker/Kuberneetes
+               AWS
+               JMS/AMQP/Kafka/MuleSoft
+               UI
+
+3) Architecture Complex interactions some time too much decouling becomes hard to manage..
+
+ 
+
+1) Google Map, NEtflix, AWS , MYTE
+
+REST
+PolyGlot persistence
+
+
+
+REST:
+	Spring Rest
+	Spring boot (framework of framework)
+	Drop wizard
+	Play framework
+	micronaut.
+	JAX-RS	
+		RestEasy
+		Jersey
+		
+	
+Spring Boot
+-----------
+Spring MVC+maven is not Spring boot
+Spring Boot is for rapid Applicaiton Development of MSC
+it is using build tools (maven and gradle)
+	current course maven
+	
+we are supposed to feel the need of the reactive progmmming 	
+	
+	
+	
+Build automation tool maven:
+	1) downaloding the jar files	
+		every jar file/ maven artifact is identifed by GAV co-ordinate
+			GroupId,
+			ArtifactId,
+			Version
+				jar, war, pom
+			
+	2) linking the jar files to the project
+	3) compiling, testing, packaging and deploying to the target environment (build of prject which was manual earlier... that has to be automated)
+	
+	
+	1 pom.xml----------------------------------->
+													build tool----------------------------> jar, war pom
+	2 current project as input
+	
+	
+Artifacts of Springboot Applicaiton
+-----------------------------------
+1 pom.xml
+	parent, dependency and plugin (fat jar)
+
+2 application.properties
+	https://docs.spring.io/spring-boot/docs/
+	https://docs.spring.io/spring-boot/docs/1.5.2.RELEASE/reference/htmlsingle/#common-application-properties
+
+3	
+Priamryconfiguration
+BootStrap class
+Initializer class
+
+EnableAutoconfiguration says that, please check the auto confgiure jar
+and take the name of the dependecies
+write/ load the code for it using the JDKDyuanmic procy desig pattern in Spring
+
+
+
+Need for these things....
+1) one thread to handle more requests
+2) Asynchronous and non blocking 
+3) back pressure
+	to controll the raate of flow of data
+4) flow of data
+	(from source/ publisher to the subscriber)
+5) responsive in case of errors
+
+These things are answered by Reactive java 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+

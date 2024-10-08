@@ -1,0 +1,15 @@
+server:
+  port: 8080
+  compression:
+    enabled: true
+
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_NAME}
+
+logging:
+  level:
+    com.adidas.next.shippingapi: ${LOGGING_LEVEL_API}
+    org:
+      postgres: ${LOGGING_LEVEL_POSTGRES}
+  env: ${ENVIRONMENT}  

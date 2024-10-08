@@ -1,0 +1,404 @@
+
+
+What is Reactive system
+-----------------------
+As per to the Reactive manifesto, reactive systems are the systems having the properties: 
+Responsive, Resilient, Elastic and Message Driven. 
+Refer: https://www.reactivemanifesto.org/, https://dzone.com/articles/reactive-microservices-done-right
+
+Responsive: The system responds in a timely manner if at all possible. 
+Responsive systems focus on providing rapid and consistent response times, establishing reliable 
+upper bounds so they deliver a consistent quality of service. [Note: In microservice environment this can be improved using the non-blocking/asynchronous communication/ Reactive Programming Libraries like: RxJava, RxJava, Reactor Framework]
+
+Resilient: The system stays responsive in the case of failure. Failures should be handled proactively. 
+[Note: In microservice environment it can be improved using the circuit breaker pattern, load balancing, retry and timeouts]
+
+Elastic: The system stays responsive under varying workload. [Note: In microservice environment 
+it can be done using docker, Kubernetes and respective cloud platforms like AKS (azure Kubernetes service),
+AWS’s  EKS (Elastic Kubernetes service), AWS’s ECS (Elastic Container Service) ].
+
+Message Driven: The components of the system should be loosely coupled. These components communicate 
+with each other using the asynchronous message-passing technique. [Note: In microservices this can be achieved using Messaging Systems like ActiveMQ, RabbitMQ or Kafka]
+
+Principles of Reactive System + Microservice = Reactive Microservice.
+
+
+
+Need of Reactive Programming
+----------------------------
+Refer the interaction given in 1001_Dia.PNG for blocking communication.
+
+All requests are received on a unique socket, associated with a channel, known as SocketChannel. 
+Each Request is mapped to a thread. This thread is responsible to take the response back to the request socket
+This thread will execute the filters (if any), Front end Servlet, Backend Servlet. Same thread will making the call to database or over the network. This request thread has to wait till it gets the desired response from the network/database call. Thread gets blocked till it gets the response 
+Since no thread is executing in this case the CPU cycles get wasted 
+Such application need a large thread pool. But even with Large thread pool, for large volume of requests the application becomes un responsive.
+
+
+Such application need a large thread pool. But even with Large thread pool, for large volume of requests the application becomes un responsive.
+
+
+For such applications, reactive programming can be used effectively. Here, a request thread sends the required input data 
+to the network and doesn’t wait for a response. Rather, it assigns a callback function, which will get executed once this blocking task is completed. 
+This way, the request thread makes itself available to handle another request. 
+
+Source: https://dzone.com/articles/spring-webflux-eventloop-vs-thread-per-request-mod
+
+
+
+Reactive Programming
+-------------------
+
+It is new programming style having following features:
+	Non Blocking and Asynchronous 
+	Functional/Declarative
+	Back Pressure 
+	Event Driven 
+	Data Flow
+
+Refer: 1002_Dia.PNG
+
+Important information:
+-----------------------
+		https://dzone.com/articles/spring-webflux-eventloop-vs-thread-per-request-mod
+		https://www.udemy.com/course/build-reactive-restful-apis-using-spring-boot-webflux/learn/lecture/12020862#content
+		https://app.pluralsight.com/library/courses/getting-started-spring-webflux/table-of-contents
+		https://howtodoinjava.com/spring-webflux/spring-webflux-tutorial/
+
+
+		Imperative and Declarative programming:
+		Imperative:
+		List<Integer> list2 =  Arrays.asList(1,2,3,4,5,6,7,8);
+		//What to do (printing) and How to Do (by iterating)
+		for (Integer integer : list2) {
+			System.out.println(integer);
+		}
+
+		Declarative:
+		//What to do (printing) not telling how to do
+		list2.forEach(x->System.out.println(x));
+
+
+		Event loop based servers:
+		EventLoop is a Non-Blocking I/O Thread (NIO), which runs continuously and takes new requests from a range of socket channels. 
+		If there are multiple EventLoops, then each EventLoop is assigned to a group of Socket Channels, 
+		and all EventLoops are managed under an EventLoopGroup.
+		
+		Event loop is backed by a single thread. (note: this is true for Single core machine)
+		But number of thread an Event loop can have is dependent upon the CPU cores.
+		 If you have 4 cores and you didn’t enable hyper-threading mechanism you would have 4 worker threads in the pool. 
+		You can determine the number of cores available to the JVM by using the static method, availableProcessors from class Runtime: Runtime.getRuntime().availableProcessors().
+		Many online tutorials say Event Loop as single thread but many say it as limited thread pool size. It said due to this above reason.
+
+		Refer: https://piotrminkowski.com/2020/03/30/a-deep-dive-into-spring-webflux-threading-model/
+
+
+		Resource/threads for the event loop can be increased by configuring the bean as shown below:
+		@Bean 
+		public ReactiveWebServerFactory reactiveWebServerFactory() { 
+			NettyReactiveWebServerFactory factory = new NettyReactiveWebServerFactory(); 	
+			factory.addServerCustomizers(builder -> builder.loopResources(LoopResources.create("my-http", 16, true))); 
+			return factory; 
+		}
+
+		Or use -Dreactor.ipc.netty.workerCount=16 environment variable. By default it's value is set to Math.max(availableProcessors(), 4). Example: java -jar your-app.jar -Dreactor.ipc.netty.workerCount=16
+
+		https://stackoverflow.com/questions/48607114/how-to-set-event-loop-pool-size-in-spring-webflux-webclient
+
+
+Important information End 
+-----------------------
+Refer: 1003_Dia.PNG
+All requests are received on a unique socket, associated with a channel, known as SocketChannel. 
+There is always a single EventLoop thread associated with a range of SocketChannels. 
+So, all requests to that Sockets/SocketChannels are handed over to the same EventLoop.
+
+Requests on the EventLoop go through a Channel Pipeline, where a number of Inbound channel handlers 
+or WebFilters are configured for the required processing.
+
+After this, EventLoop executes the application-specific code. 
+
+EventLoop delegates the request to a new Worker Thread.
+	a) Worker Thread perform these long tasks.
+	b) After completion, it writes the response to a task and adds that in 	ScheduledTaskQueue.
+ EventLoop polls the tasks in task queue (ScheduledTaskQueue).
+	If there are any, perform Step 7 to Step 8 via a task’s Runnable run method.
+	Otherwise, it continues to poll new requests at SocketChannel.
+On its completion, EventLoop again goes through a number of Outbound Channel handlers for configured processing. 
+In the end, EventLoop handed back the response to the same SocketChannel/Socket.
+
+Source: https://dzone.com/articles/spring-webflux-eventloop-vs-thread-per-request-mod
+
+
+
+How to program in Reactive way in Java? 
+It is done using the Reactive Stream
+
+
+Reactive Streams
+-----------------
+Reactive Streams is an initiative to provide a standard for asynchronous stream processing with non-blocking back pressure. 
+This encompasses efforts aimed at runtime environments (JVM and JavaScript) as well as network protocols. 
+Refer: https://www.reactive-streams.org/
+
+
+
+Implementation Reactive Stream 
+------------------------------
+
+Following are the implementation of Reactive Streams:
+RxJava2
+Reactor Framework
+Note: In this course focus will be on Reactor Framework as spring web flux Implicitly uses the Reactor Framework.
+Source: https://projectreactor.io/
+
+Note: Reactor Framework was introduced before java9. But it has same structure for the service provider 
+interfaces as given by the Reactive Stream Specification of Java 9. 
+
+
+Refer: interfaces:
+
+1004_Dia.PNG
+
+Following are the important service provider interfaces (SPI) for the reactive stream.
+Publisher: A Publisher is a provider of a potentially unlimited number of sequenced elements. Elements are published as requested by its Subscriber(s)
+Subscriber: A Subscriber is a consumer of a potentially unbounded number of sequenced elements.
+Subscription: A Subscription represents a one-to-one lifecycle of a Subscriber subscribing to a Publisher. 
+Processor: A Processor represents a processing stage — which is both a Subscriber and a Publisher and obeys the contracts of both.
+
+Source: https://dzone.com/articles/build-reactive-rest-apis-with-spring-webflux
+
+
+
+PublisherAndSubscriber.pptx
+
+Refer the project: Demo1001_Reactor. 
+Execute the demos in the file: Demo10001_MonoTest.java. 
+Click on top of each method independently and execute one by one, 
+using run as junit option. 
+firstMono()
+monoWithConsumer(), monoWithDoOn(), emptyMono(), emptyCompleteConsumerMono(), 
+Observe the event logs that are getting printed due to use of log() method. 
+These logs will be in the same order as mentioned in the PublisherAndSubscriber.pptx.
+
+
+
+
+Error handling to stay responsive
+---------------------------------
+
+error() method of the Mono Publishers is used to publish errors. It treats all exceptions (checked/Unchecked) in the same way. 
+Exceptions can be caught and rethrown  to rest of the operations using overloaded form of subscribe() 
+method or doOnError() callback method. Refer the code given below:
+
+Mono.error(new Exception()).log()
+                .doOnError(exception -> System.out.println("doOnError() callback: " + exception+"\n\n"))
+                .subscribe(actualValFromPub->System.out.println("subscribe(): "+actualValFromPub),
+                        exception -> System.out.println("Consumer for Error: " + exception)
+                )
+
+
+In reactive programming one of the important paradigm is that system should stay responsive, even in case of errors. 
+There are following methods to handle the error and return an alternative in turn: 
+onErrorResume(): returns an alternative publisher in turn 
+onErrorReturn(): returns an alternative value in turn
+
+
+Refer the project: Demo1001_Reactor. Execute the demos in the file: Demo10001_MonoTest.java. 
+Click on top of each method independently and execute one by one, using run as junit option: errorRuntimeExceptionMono(), errorExceptionMono(), errorConsumerMono(), errorDoOnErrorMono(), errorOnErrorResumeMono(), errorOnErrorReturnMono()
+Observe the event logs that are getting printed due to use of log() method. These logs will be in the same order as mentioned in the slide.
+
+
+
+
+
+StepVerifier
+------------
+
+A StepVerifier provides a declarative way of creating a test script for an async Publisher sequence.  
+It assists in writing the test cases by expressing expectations about the events that will happen upon subscription. 
+Following the Steps to be followed for Using the Step Verifier
+
+1 Create a StepVerifier around a Publisher using create(Publisher) or withVirtualTime(Supplier<Publisher>)
+
+2 Set up individual value expectations using expectNext, expectNextMatches(Predicate), assertNext(Consumer), 
+  expectNextCount(long) or expectNextSequence(Iterable).
+  
+3 Trigger subscription actions during the verification using either thenRequest(long) or thenCancel(). 
+[Note: Using thenRequest(long) is optional, i.e. subscription is done automatically, hence i missed in the example shown below]
+
+4 Finalize the test scenario using a terminal expectation: expectComplete(), expectError(), expectError(Class), expectErrorMatches(Predicate), 
+or thenCancel().
+
+5 The verification must be triggered after the terminal expectations (completion, error, cancellation) have been declared, 
+by calling one of the verify() methods. Trigger the verification of the resulting StepVerifier on its Publisher using either 
+verify() or verify(Duration). 
+[Note: some of the terminal expectations above have a "verify" prefixed alternative that both declare the expectation and trigger the verification]
+
+6 If any expectations failed, an AssertionError will be thrown indicating the failures. Refer the example give below:
+
+
+ StepVerifier.create(Flux.just("foo", "bar"))
+   .expectNext("foo")
+   .expectNext("bar")
+   .expectComplete()
+   .verify();
+
+
+Verify method (to block the test cases till the expectations are executed):
+------------------------------------------------------------------------------
+Verify the signals received by this subscriber. 
+Unless a default timeout has been set before construction of the StepVerifier via setDefaultTimeout(Duration), 
+IMPORTANT: this method will block until the stream has been terminated 
+(either through Subscriber.onComplete(), Subscriber.onError(Throwable) or Subscription.cancel()). 
+Depending on the declared expectations and actions, notably in case of undersized manual requests, such a verification could also block indefinitely.
+
+Refer: https://projectreactor.io/docs/test/release/api/reactor/test/StepVerifier.html#verify--
+
+Refer the verify methods: 
+verify(),  verify(Duration duration)
+verifyThenAssertThat(), verifyThenAssertThat(Duration duration)
+verifyComplete()
+
+Source:
+              https://projectreactor.io/docs/test/release/api/reactor/test/StepVerifier.html
+              https://www.baeldung.com/reactive-streams-step-verifier-test-publisher
+
+
+Refer the project: Demo1001_Reactor. Execute the demos in the file: Demo10001_MonoTest.java. 
+Click on top of each method independently and execute one by one, using run as junit option: 
+monoWithStepVerifier1(), monoWithStepVerifier2(), monoWithStepVerifierWithException()
+Observe the event logs that are getting printed due to use of log() method. These logs will be in the same order as mentioned in the slide.
+
+
+
+Flux
+-----
+Flux.fromIterable(): 
+	Used to create Flux based publisher from an iterable. It will emit al the value resent in an iterable
+
+Flux.range(startpoint,NumberOfElements): 
+	Used to build a Flux that will only emit a sequence of count incrementing integers, starting from start. 
+	It emits integers between start (included) and start + count (excluded) and then completes.
+Flux.interval(Duration): 
+	Creates a Flux that emits long values starting with 0 and incrementing at specified time intervals on the global timer. 
+	interval() method Runs in a backend thread.
+Flux.interval(Duration).take(N): 
+	Creates a Flux that emits long values starting with 0 and incrementing at specified time intervals on the global timer. 
+	interval() Runs in a backend thread. take() is used to only take the first N values from this Flux, if available.
+StepVerifier and expectNext(): 
+	Expect the next element received to be equal to the given value.
+StepVerifier and expectNextCount(): 
+	Expectation to receive count of elements, starting from the previous expectation or onSubscribe.
+
+
+Refer the project: Demo1001_Reactor. 
+Execute the demos in the file: Demo10002_FluxTest.java. Click on top of each method independently and execute one by one, 
+
+using run as junit option: 
+	firstFlux(), fluxFromIterable(), fluxFromRange(), fluxFromInterval(), fluxFromInterval2(), fluxContent(), fluxContentCount()
+Observe the event logs that are getting printed due to use of log() method. These logs will be in the same order as mentioned in the slide.
+
+
+
+
+Error handling in flux
+---------------------
+In reactive programming one of the important paradigm is that system should stay responsive, even in case of errors. 
+There are following methods to handle the error and return an alternative in turn: 
+onErrorResume(): returns an alternative publisher in turn 
+onErrorReturn(): returns an alternative value in turn
+StepVerifier and expectError(): Expect an error of the specified type
+
+
+Click on top of each method independently and execute one by one, using run as junit option: 
+testFluxContentAndException(),testFluxContentAndExceptionWithDoOnError()
+testFluxContentAndExceptionWithOnErrorReturn(),testFluxContentAndExceptionWithOnErrorResume(). 
+Observe the event logs that are getting printed due to use of log() method. These logs will be in the same order as mentioned in the slide13.
+Observer the usage of verify() in first 2 methods and usage of verifyComplete() in last 2 methods
+
+
+
+
+
+Mono and Flux *********************************************
+---------------
+map(): 
+	Used to convert Flux of one type to other. Example Flux<Integer> to Flux<String>
+flatMap(): 
+	Transform the elements emitted by this Flux asynchronously into Publishers, then flatten these inner publishers 
+	into a single Flux through merging, which allow them to interleave. 
+flatMapMany(): 
+	Used to convert Mono of one type to Flux
+concat(): 
+	Concatenate all sources provided as a vararg, forwarding elements emitted by the sources downstream.
+	Concatenation is achieved by sequentially subscribing to the first source then waiting for it to complete before 
+	subscribing to the next, and so on until the last source completes.
+concatWith(): 
+	Same as that of conact(). But concatWith() returns the flux even when called on Mono
+merge(): 
+	Merge data from Publisher sequences contained in an array / vararg into an interleaved merged sequence.
+mergeWith():
+	Same as that of merge(). But mergeWith() returns the flux even when called on Mono 
+zip(): 
+	Combines the elements of 2 Publisher available at each place. Each combination produces an element 
+	which is zipped/combined result of elements at that position. 
+zipWith(): 
+	Same as zip(). But outcome of zipWith() is a Tupple. 
+	Tupple contains the elements and each element in tuple is combination of elements from both Flux. 
+	Example of Tupple: [1,2,3,4,5] and [6,7,8,9,10]--> Tupple List [ [1,6], [2,7], [3,8], [4,9], [5,10] ]
+
+Flux with BackPressure
+-----------------------
+
+As discussed on slide 14, To avoid cascading failure due to slower TPS on Client side, 
+the client application can ask the publisher to buffer the events at their end and push the events at the rate of the client application. 
+This is called backpressure. 
+Refer the method given below:
+
+Demo10004_FluxWithBackPressure. Click on top of each method independently and execute one by one, using run as junit option: fluxCustomSubscriber(), fluxLimitRate(), fluxRequest(). 
+Observe the event logs that are getting printed due to use of log() method. 
+
+
+
+ConCurrency
+------------
+Reactor, is concurrency-agnostic. That is, it does not enforce a concurrency model. 
+Rather, it leaves the developer, in command. 
+However, that does not prevent the library from helping you with concurrency.
+Obtaining a Flux or a Mono does not necessarily mean that it runs in a dedicated Thread. 
+Instead, most operators continue working in the Thread on which the previous operator executed. 
+Unless specified, the topmost operator (the source) itself runs on the Thread in which the subscribe() call was made.
+
+
+publishOn
+------------
+publishOn applies in the same way as any other operator, in the middle of the subscriber chain. 
+It takes signals from upstream and replays them downstream while executing the callback on a worker from the associated Schedule.
+
+Creates a new Scheduler backed by 4 Thread
+The first map runs on the StartCustomThread 
+The publishOn switches the whole sequence on a Thread picked from Scheduler (s)
+The second map runs on said Thread from Scheduler
+The StartCustomThread is the one where the subscription happens
+The print happens on the latest execution context which is the one from publishOn
+
+
+subscribeOn
+--------------
+subscribeOn() applies to the subscription process, when that backward chain is constructed. 
+As a consequence, no matter where you place the subscribeOn in the chain, it always affects the context of the source emission 
+and all the operations/emissions/events happen using the Thread from Scheduler . 
+
+
+
+This methods Creates a new Scheduler backed by 4 Thread
+The first map runs on one of these 4 threads because subscribeOn switches the whole sequence right from subscription time.
+The second map also runs on same thread from Scheduler
+StartCustomThread is the one where the subscription initially happens, but subscribeOn immediately shifts it to one of the 4 scheduler threads...
+
+
+
+
+
+

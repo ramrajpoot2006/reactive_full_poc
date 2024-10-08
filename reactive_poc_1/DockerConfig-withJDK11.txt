@@ -1,0 +1,83 @@
+FROM maven:3.6.3-openjdk-11-slim AS builder
+WORKDIR /var/app
+COPY ["pom.xml","/var/app"]
+COPY ["src","/var/app/src"]
+RUN mvn install
+-----------------DockerFile-----------------------------------
+FROM adoptopenjdk/openjdk11:jdk-11.0.5_10-slim
+EXPOSE 8080
+WORKDIR /var/app
+COPY --from=builder /var/app/target/*.jar /var/app/app.jar
+ENTRYPOINT [ \
+    "sh", \
+    "-c", \
+    "java -Dsun.net.inetaddr.ttl=60 -Djava.security.egd=file:/dev/./urandom \
+    -XX:+IgnoreUnrecognizedVMOptions \
+    -XX:+PerfDisableSharedMem \
+    -XX:+HeapDumpOnOutOfMemoryError \
+    -XX:+ExitOnOutOfMemoryError \
+    -XX:+UseG1GC \
+    -XX:+UnlockExperimentalVMOptions \
+    -XX:+UseCGroupMemoryLimitForHeap \
+    -XX:MaxRAMFraction=2 \
+    -XX:+UseStringDeduplication \
+    -DETG_ENV=${ENVIRONMENT} \
+    -Dspring.profiles.active=${SPRING_BOOT_PROFILE} \
+    ${JVM_DEBUG_PORT:+-agentlib:jdwp=transport=dt_socket,address=$JVM_DEBUG_PORT,server=y,suspend=n} \
+    -jar /var/app/app.jar"]
+
+
+----------------DockerCompose----------------
+version: '3.1'
+services:
+
+  postgres:
+    container_name: pg_container
+    image: postgres:13.1-alpine
+    restart: always
+    ports:
+      - 5433:5432
+    volumes:
+      - 'postgres_data:/data/db'
+    environment:
+      POSTGRES_INITDB_ROOT_USERNAME: ${POSTGRES_USER}
+      POSTGRES_INITDB_ROOT_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST_AUTH_METHOD: trust
+
+  pgadmin:
+    container_name: pgadmin4_container 
+    image: dpage/pgadmin4:latest
+    restart: always
+    ports:
+      - 5050:5050
+    depends_on:
+      - postgres
+    environment:
+      ME_CONFIG_POSTGRES_ADMINUSERNAME: ${POSTGRES_USER}
+      ME_CONFIG_POSTGRES_ADMINPASSWORD: ${POSTGRES_PASSWORD}
+      ME_CONFIG_POSTGRES_PORT: ${POSTGRES_PORT}
+      ME_CONFIG_POSTGRES_SERVER: ${POSTGRES_HOST}
+      PGADMIN_DEFAULT_EMAIL: server@myapp.de
+      PGADMIN_DEFAULT_PASSWORD: XXXX
+
+  customer-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 7070:8080
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}
+      SPRING_BOOT_PROFILE: ${SPRING_BOOT_PROFILE}      
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: ${POSTGRES_HOST}            
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_NAME: ${POSTGRES_NAME}
+      LOGGING_LEVEL_API: ${LOGGING_LEVEL_API}
+      LOGGING_LEVEL_POSTGRES: ${LOGGING_LEVEL_POSTGRES}
+
+volumes:
+  postgres_data:
+    driver: local
+

@@ -1,0 +1,2 @@
+ctrl+alt+S - code style java
+settign icon ->select import scheme and slect your formatter xml file
